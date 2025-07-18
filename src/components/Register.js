@@ -106,9 +106,17 @@ export default function Register() {
 
     try {
       await register(formData.email, formData.username, formData.password, formData.pin);
-      navigate('/dashboard');
+      navigate('/main');
     } catch (error) {
-      setErrors({ submit: error.message });
+      let errorMessage = error.message;
+      
+      if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection';
+      } else if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'Email is already registered';
+      }
+      
+      setErrors({ submit: errorMessage });
     }
 
     setLoading(false);
@@ -145,6 +153,7 @@ export default function Register() {
               required
             />
             {errors.email && <span className="error-message">{errors.email}</span>}
+            }
             
           </div>
 
@@ -164,6 +173,7 @@ export default function Register() {
               {getUsernameStatus()}
             </div>
             {errors.username && <span className="error-message">{errors.username}</span>}
+            }
             
           </div>
 
@@ -180,6 +190,7 @@ export default function Register() {
               required
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
+            }
             
           </div>
 
@@ -196,6 +207,7 @@ export default function Register() {
               required
             />
             {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+            }
             
           </div>
 
@@ -213,10 +225,12 @@ export default function Register() {
               required
             />
             {errors.pin && <span className="error-message">{errors.pin}</span>}
+            }
             
           </div>
 
           {errors.submit && <div className="error-message submit-error">{errors.submit}</div>}
+          }
           
 
           <button 
